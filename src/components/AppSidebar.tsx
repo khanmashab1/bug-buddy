@@ -1,25 +1,74 @@
-import { LayoutDashboard, FolderOpen, FileText, Settings, Bug } from "lucide-react";
-import SidebarNavLink from "./SidebarNavLink";
+import { LayoutDashboard, FolderKanban, FileBarChart, Settings, Bug } from "lucide-react";
+import { NavLink } from "@/components/NavLink";
+import { useLocation } from "react-router-dom";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  useSidebar,
+} from "@/components/ui/sidebar";
+
+const navItems = [
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Projects", url: "/projects", icon: FolderKanban },
+  { title: "Reports", url: "/reports", icon: FileBarChart },
+  { title: "Settings", url: "/settings", icon: Settings },
+];
 
 const AppSidebar = () => {
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
+  const location = useLocation();
+
   return (
-    <aside className="fixed left-0 top-0 z-30 flex h-screen w-56 flex-col border-r border-border bg-card">
-      <div className="flex items-center gap-2.5 border-b border-border px-5 py-4">
-        <Bug className="h-6 w-6 text-primary" />
-        <span className="text-base font-bold tracking-tight text-foreground">AutoBugTester</span>
-      </div>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <Bug className="h-5 w-5 shrink-0 text-primary" />
+          {!collapsed && (
+            <span className="text-sm font-bold tracking-tight text-sidebar-foreground">
+              BugBuddy
+            </span>
+          )}
+        </div>
+      </SidebarHeader>
 
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-4">
-        <SidebarNavLink to="/" icon={LayoutDashboard} label="Dashboard" />
-        <SidebarNavLink to="/projects" icon={FolderOpen} label="Projects" />
-        <SidebarNavLink to="/reports" icon={FileText} label="Reports" />
-        <SidebarNavLink to="/settings" icon={Settings} label="Settings" />
-      </nav>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to={item.url}
+                      end={item.url === "/"}
+                      className="hover:bg-sidebar-accent/50"
+                      activeClassName="bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                    >
+                      <item.icon className="mr-2 h-4 w-4 shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      <div className="border-t border-border px-4 py-3">
-        <p className="text-xs text-muted-foreground">v1.0.0 · MIT License</p>
-      </div>
-    </aside>
+      <SidebarFooter className="border-t border-sidebar-border px-4 py-3">
+        {!collapsed && (
+          <p className="text-[11px] text-muted-foreground">v1.0.0 · MIT License</p>
+        )}
+      </SidebarFooter>
+    </Sidebar>
   );
 };
 
